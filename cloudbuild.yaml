@@ -5,7 +5,18 @@ steps:
 
     - id: "Chown in /var/www"
       name: "gcr.io/cloud-builders/docker"
-      args: ["exec", "-u", "root", "-t", "app", "chown", "-R", "www-data:www-data", "/var/www"]
+      args:
+          [
+              "exec",
+              "-u",
+              "root",
+              "-t",
+              "app",
+              "chown",
+              "-R",
+              "www-data:www-data",
+              "/var/www",
+          ]
 
     - id: "Rodando docker ps"
       name: "gcr.io/cloud-builders/docker"
@@ -22,3 +33,20 @@ steps:
     - id: "Rodando key:generate"
       name: "gcr.io/cloud-builders/docker"
       args: ["exec", "-t", "app", "php", "/var/www/artisan", "key:generate"]
+
+    - id: "Rodando migrations"
+      name: "gcr.io/cloud-builders/docker"
+      args: ["exec", "-t", "app", "php", "/var/www/artisan", "migrate"]
+
+    - id: "Rodando phpunit"
+      name: "gcr.io/cloud-builders/docker"
+      args:
+          [
+              "exec",
+              "-t",
+              "app",
+              "php",
+              "/var/www/vendor/bin/phpunit",
+              "-c",
+              "/var/www/phpunit.xml",
+          ]
